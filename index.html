@@ -494,7 +494,70 @@ async function saveLeadToSupabase(lead) {
 
   return true;
 }
+function getShareUrl() {
+  return `${window.location.origin}/?report=${state.shareId}`;
+}
 
+function buildReportPayload() {
+  return {
+    tools: state.tools,
+    teamSize: state.teamSize,
+    useCase: state.useCase,
+    audit: state.audit,
+    aiSummary: state.aiSummary,
+    shareId: state.shareId
+  };
+}
+
+async function saveReportToSupabase() {
+  if (!state.shareId) {
+    state.shareId = uid();
+  }
+
+  const { error } = await supabaseClient
+    .from("reports")
+    .upsert({
+      share_id: state.shareId,
+      report_data: buildReportPayload()
+    });
+
+  if (error) {
+    console.error("Report save error:", error);
+    return false;
+  }
+
+  return true;
+}
+
+async function loadSharedReport() {
+  const params = new URLSearchParams(window.location.search);
+  const reportId = params.get("report");
+
+  if (!reportId) return false;
+
+  const { data, error } = await supabaseClient
+    .from("reports")
+    .select("report_data")
+    .eq("share_id", reportId)
+    .single();
+
+  if (error || !data?.report_data) {
+    console.error("Report load error:", error);
+    return false;
+  }
+
+  const report = data.report_data;
+
+  state.tools = report.tools || [];
+  state.teamSize = report.teamSize || 1;
+  state.useCase = report.useCase || "Software development";
+  state.audit = report.audit || null;
+  state.aiSummary = report.aiSummary || "";
+  state.shareId = report.shareId || reportId;
+  state.page = "results";
+
+  return true;
+}
 function buildToolsSummary() {
   return state.tools.map(tool => {
     const catalog = TOOLS_CATALOG[tool.toolId];
@@ -545,8 +608,14 @@ function buildToolsSummary() {
     }
 
     function uid() {
-      return Math.random().toString(36).slice(2, 10);
-    }
+  if (window.crypto && crypto.getRandomValues) {
+    const bytes = new Uint8Array(12);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, byte => byte.toString(36).padStart(2, "0")).join("").slice(0, 20);
+  }
+
+  return Math.random().toString(36).slice(2, 14) + Date.now().toString(36);
+}
 
     function calculateCost(tool) {
       const catalog = TOOLS_CATALOG[tool.toolId];
@@ -691,6 +760,7 @@ function buildToolsSummary() {
       const totalSavings = audit.totalSavings;
       const shareId = state.shareId || uid();
       if (!state.shareId) state.shareId = shareId;
+      const shareUrl = getShareUrl();
 
       return `
         <div class="card">
@@ -757,7 +827,7 @@ function buildToolsSummary() {
         <div class="card">
           <div class="section-title">Share link</div>
           <div class="share-box">
-            <div class="share-link">stackaudit.io/report/${shareId}</div>
+            <a class="share-link" href="${shareUrl}" target="_blank">${shareUrl}</a>
             <button class="button-secondary" id="copyBtn">${state.copied ? 'Copied' : 'Copy'}</button>
           </div>
           <p class="small-text">This link is simple and shareable. No personal email data is included.</p>
@@ -817,13 +887,18 @@ function buildToolsSummary() {
           });
         });
 
-        document.getElementById('runAudit')?.addEventListener('click', () => {
-          if (state.tools.length === 0) return;
-          runAudit();
-          state.aiSummary = createSummary();
-          state.page = 'results';
-          render();
-        });
+        document.getElementById('runAudit')?.addEventListener('click', async () => {
+  if (state.tools.length === 0) return;
+
+  runAudit();
+  state.aiSummary = createSummary();
+  state.shareId = uid();
+
+  await saveReportToSupabase();
+
+  state.page = 'results';
+  render();
+});
       } else {
         document.getElementById('backBtn')?.addEventListener('click', () => {
           state.page = 'form';
@@ -831,7 +906,7 @@ function buildToolsSummary() {
         });
 
         document.getElementById('copyBtn')?.addEventListener('click', () => {
-          navigator.clipboard.writeText(`https://stackaudit.io/report/${state.shareId}`);
+          navigator.clipboard.writeText(getShareUrl());
           state.copied = true;
           render();
           setTimeout(() => {
@@ -879,8 +954,11 @@ document.getElementById('emailSubmit')?.addEventListener('click', async () => {
       }
     }
 
-    loadState();
-    render();
+   (async function init() {
+  loadState();
+  await loadSharedReport();
+  render();
+})();
   </script>
 </body>
 </html>
