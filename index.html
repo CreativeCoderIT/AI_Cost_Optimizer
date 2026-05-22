@@ -391,7 +391,7 @@
 
     <main id="app"></main>
   </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const TOOLS_CATALOG = {
       chatgpt: {
@@ -478,7 +478,32 @@
       'General productivity',
       'DevOps/Infrastructure'
     ];
+    const SUPABASE_URL = "https://jukdjdojeiwkmmvqkliv.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY = "sb_publishable_HpSL2Q0EHi2WRFblghxk7g_S7N4Hv-q";
 
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function saveLeadToSupabase(lead) {
+  const { error } = await supabaseClient
+    .from("leads")
+    .insert([lead]);
+
+  if (error) {
+    console.error("Supabase error:", error);
+    return false;
+  }
+
+  return true;
+}
+
+function buildToolsSummary() {
+  return state.tools.map(tool => {
+    const catalog = TOOLS_CATALOG[tool.toolId];
+    const plan = catalog?.plans.find(item => item.id === tool.planId);
+
+    return `${catalog?.name || tool.toolId} - ${plan?.label || tool.planId}`;
+  }).join(", ");
+}
     const state = {
       page: 'form',
       tools: [],
@@ -816,24 +841,42 @@
           }, 1500);
         });
 
-        document.getElementById('emailSubmit')?.addEventListener('click', () => {
-          const email = document.getElementById('emailInput')?.value.trim();
-          const name = document.getElementById('emailName')?.value.trim();
-          const company = document.getElementById('emailCompany')?.value.trim();
-          if (!email || !email.includes('@')) return;
+document.getElementById('emailSubmit')?.addEventListener('click', async () => {
+  const email = document.getElementById('emailInput')?.value.trim();
+  const name = document.getElementById('emailName')?.value.trim();
+  const company = document.getElementById('emailCompany')?.value.trim();
 
-          state.email = email;
-          state.emailName = name;
-          state.emailCompany = company;
-          state.emailSubmitLoading = true;
-          render();
+  if (!email || !email.includes('@')) {
+    alert("Please enter a valid email address.");
+    return;
+  }
 
-          setTimeout(() => {
-            state.emailSubmitLoading = false;
-            state.emailSuccess = true;
-            render();
-          }, 1200);
-        });
+  state.email = email;
+  state.emailName = name;
+  state.emailCompany = company;
+  state.emailSubmitLoading = true;
+  render();
+
+  const lead = {
+    name: name || null,
+    email,
+    company: company || null,
+    company_size: String(state.teamSize),
+    monthly_spend: state.audit?.totalCurrent || 0,
+    tools: buildToolsSummary(),
+    audit_result: state.aiSummary || createSummary()
+  };
+
+  const saved = await saveLeadToSupabase(lead);
+
+  state.emailSubmitLoading = false;
+  state.emailSuccess = saved;
+  render();
+
+  if (!saved) {
+    alert("Could not save your report. Please try again.");
+  }
+});
       }
     }
 
