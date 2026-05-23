@@ -1,0 +1,11 @@
+{
+  "name": "stackaudit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI spend audit tool with rule-based recommendations and shareable reports.",
+  "scripts": {
+    "test": "node --test tests/auditEngine.test.js",
+    "lint": "node --check src/auditEngine.js && node --check tests/auditEngine.test.js"
+  },
+  "devDependencies": {}
+}
