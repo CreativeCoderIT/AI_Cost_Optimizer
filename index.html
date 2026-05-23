@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -375,11 +375,11 @@
       <p class="hero-copy">Enter your current AI subscriptions and get a simple cost audit. The tool shows where your team can save money and use a better plan.</p>
       <div class="stats">
         <div class="stat">
-          <div class="stat-number">$840</div>
-          <div class="stat-label">avg annual savings</div>
+          <div class="stat-value">Free</div>
+<div class="stat-label">AI spend audit</div>
         </div>
         <div class="stat">
-          <div class="stat-number">12</div>
+          <div class="stat-number">8</div>
           <div class="stat-label">tools analyzed</div>
         </div>
         <div class="stat">
@@ -392,573 +392,781 @@
     <main id="app"></main>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const TOOLS_CATALOG = {
-      chatgpt: {
-        name: 'ChatGPT', icon: 'GPT', color: '#10a37f',
-        plans: [
-          { id: 'free', label: 'Free', cost: 0, perUser: false },
-          { id: 'plus', label: 'Plus', cost: 20, perUser: true },
-          { id: 'team', label: 'Team', cost: 30, perUser: true },
-          { id: 'enterprise', label: 'Enterprise', cost: 60, perUser: true }
-        ]
-      },
-      claude: {
-        name: 'Claude', icon: 'Cl', color: '#d97706',
-        plans: [
-          { id: 'free', label: 'Free', cost: 0, perUser: false },
-          { id: 'pro', label: 'Pro', cost: 20, perUser: true },
-          { id: 'team', label: 'Team', cost: 30, perUser: true },
-          { id: 'enterprise', label: 'Enterprise', cost: 60, perUser: true }
-        ]
-      },
-      cursor: {
-        name: 'Cursor', icon: 'Cur', color: '#7c6af7',
-        plans: [
-          { id: 'hobby', label: 'Hobby (Free)', cost: 0, perUser: true },
-          { id: 'pro', label: 'Pro', cost: 20, perUser: true },
-          { id: 'business', label: 'Business', cost: 40, perUser: true }
-        ]
-      },
-      copilot: {
-        name: 'GitHub Copilot', icon: 'GH', color: '#24292e',
-        plans: [
-          { id: 'individual', label: 'Individual', cost: 10, perUser: true },
-          { id: 'business', label: 'Business', cost: 19, perUser: true },
-          { id: 'enterprise', label: 'Enterprise', cost: 39, perUser: true }
-        ]
-      },
-      gemini: {
-        name: 'Gemini', icon: 'Gem', color: '#4285f4',
-        plans: [
-          { id: 'free', label: 'Free', cost: 0, perUser: false },
-          { id: 'advanced', label: 'Advanced', cost: 20, perUser: true },
-          { id: 'workspace', label: 'Workspace AI', cost: 30, perUser: true }
-        ]
-      },
-      openai_api: {
-        name: 'OpenAI API', icon: 'API', color: '#412991',
-        plans: [
-          { id: 'paygo', label: 'Pay-as-you-go', cost: 0, perUser: false, custom: true },
-          { id: 'prepaid', label: 'Prepaid credits', cost: 0, perUser: false, custom: true }
-        ]
-      },
-      anthropic_api: {
-        name: 'Anthropic API', icon: 'Ant', color: '#d97706',
-        plans: [
-          { id: 'paygo', label: 'Pay-as-you-go', cost: 0, perUser: false, custom: true },
-          { id: 'prepaid', label: 'Prepaid credits', cost: 0, perUser: false, custom: true }
-        ]
-      },
-      windsurf: {
-        name: 'Windsurf', icon: 'WS', color: '#06b6d4',
-        plans: [
-          { id: 'free', label: 'Free', cost: 0, perUser: true },
-          { id: 'pro', label: 'Pro', cost: 15, perUser: true },
-          { id: 'teams', label: 'Teams', cost: 35, perUser: true }
-        ]
-      },
-      v0: {
-        name: 'v0 (Vercel)', icon: 'v0', color: '#000000',
-        plans: [
-          { id: 'free', label: 'Free', cost: 0, perUser: true },
-          { id: 'premium', label: 'Premium', cost: 20, perUser: true },
-          { id: 'team', label: 'Team', cost: 40, perUser: true }
-        ]
-      }
-    };
 
-    const USE_CASES = [
-      'Software development',
-      'Content creation',
-      'Data analysis',
-      'Customer support',
-      'Research',
-      'Design & creative',
-      'General productivity',
-      'DevOps/Infrastructure'
-    ];
-    const SUPABASE_URL = "https://jukdjdojeiwkmmvqkliv.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_HpSL2Q0EHi2WRFblghxk7g_S7N4Hv-q";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-async function saveLeadToSupabase(lead) {
-  const { error } = await supabaseClient
-    .from("leads")
-    .insert([lead]);
-
-  if (error) {
-    console.error("Supabase error:", error);
-    return false;
-  }
-
-  return true;
-}
-function getShareUrl() {
-  return `${window.location.origin}/?report=${state.shareId}`;
-}
-
-function buildReportPayload() {
-  return {
-    tools: state.tools,
-    teamSize: state.teamSize,
-    useCase: state.useCase,
-    audit: state.audit,
-    aiSummary: state.aiSummary,
-    shareId: state.shareId
+<script>
+  const TOOLS_CATALOG = {
+    chatgpt: {
+      name: "ChatGPT",
+      icon: "GPT",
+      color: "#10a37f",
+      plans: [
+        { id: "plus", label: "Plus", cost: 20, perUser: true },
+        { id: "team", label: "Team", cost: 30, perUser: true },
+        { id: "enterprise", label: "Enterprise", cost: 60, perUser: true },
+        { id: "api_direct", label: "API direct", cost: 0, perUser: false, custom: true }
+      ]
+    },
+    claude: {
+      name: "Claude",
+      icon: "Cl",
+      color: "#d97706",
+      plans: [
+        { id: "free", label: "Free", cost: 0, perUser: false },
+        { id: "pro", label: "Pro", cost: 20, perUser: true },
+        { id: "max", label: "Max", cost: 100, perUser: true },
+        { id: "team", label: "Team", cost: 30, perUser: true },
+        { id: "enterprise", label: "Enterprise", cost: 60, perUser: true },
+        { id: "api_direct", label: "API direct", cost: 0, perUser: false, custom: true }
+      ]
+    },
+    cursor: {
+      name: "Cursor",
+      icon: "Cur",
+      color: "#7c6af7",
+      plans: [
+        { id: "hobby", label: "Hobby", cost: 0, perUser: true },
+        { id: "pro", label: "Pro", cost: 20, perUser: true },
+        { id: "business", label: "Business", cost: 40, perUser: true },
+        { id: "enterprise", label: "Enterprise", cost: 60, perUser: true }
+      ]
+    },
+    copilot: {
+      name: "GitHub Copilot",
+      icon: "GH",
+      color: "#24292e",
+      plans: [
+        { id: "individual", label: "Individual", cost: 10, perUser: true },
+        { id: "business", label: "Business", cost: 19, perUser: true },
+        { id: "enterprise", label: "Enterprise", cost: 39, perUser: true }
+      ]
+    },
+    gemini: {
+      name: "Gemini",
+      icon: "Gem",
+      color: "#4285f4",
+      plans: [
+        { id: "pro", label: "Pro", cost: 20, perUser: true },
+        { id: "ultra", label: "Ultra", cost: 250, perUser: true },
+        { id: "api", label: "API", cost: 0, perUser: false, custom: true }
+      ]
+    },
+    openai_api: {
+      name: "OpenAI API direct",
+      icon: "API",
+      color: "#412991",
+      plans: [
+        { id: "paygo", label: "Pay-as-you-go", cost: 0, perUser: false, custom: true },
+        { id: "credits", label: "Credits / committed spend", cost: 0, perUser: false, custom: true }
+      ]
+    },
+    anthropic_api: {
+      name: "Anthropic API direct",
+      icon: "Ant",
+      color: "#d97706",
+      plans: [
+        { id: "paygo", label: "Pay-as-you-go", cost: 0, perUser: false, custom: true },
+        { id: "credits", label: "Credits / committed spend", cost: 0, perUser: false, custom: true }
+      ]
+    },
+    windsurf: {
+      name: "Windsurf",
+      icon: "WS",
+      color: "#06b6d4",
+      plans: [
+        { id: "free", label: "Free", cost: 0, perUser: true },
+        { id: "pro", label: "Pro", cost: 15, perUser: true },
+        { id: "teams", label: "Teams", cost: 35, perUser: true },
+        { id: "enterprise", label: "Enterprise", cost: 60, perUser: true }
+      ]
+    }
   };
-}
 
-async function saveReportToSupabase() {
-  if (!state.shareId) {
-    state.shareId = uid();
+  const USE_CASES = ["coding", "writing", "data", "research", "mixed"];
+
+  const SUPABASE_URL = "https://jukdjdojeiwkmmvqkliv.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_HpSL2Q0EHi2WRFblghxk7g_S7N4Hv-q";
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const state = {
+    page: "form",
+    tools: [],
+    teamSize: 3,
+    useCase: "coding",
+    audit: null,
+    aiSummary: "",
+    email: "",
+    emailName: "",
+    emailCompany: "",
+    emailRole: "",
+    copied: false,
+    shareId: null,
+    emailSubmitLoading: false,
+    emailSuccess: false
+  };
+
+  function uid() {
+    if (window.crypto && crypto.getRandomValues) {
+      const bytes = new Uint8Array(12);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, byte => byte.toString(36).padStart(2, "0")).join("").slice(0, 20);
+    }
+
+    return Math.random().toString(36).slice(2, 14) + Date.now().toString(36);
   }
 
-  const { error } = await supabaseClient
-    .from("reports")
-    .upsert({
+  function getPlan(tool) {
+    const catalog = TOOLS_CATALOG[tool.toolId];
+    return catalog.plans.find(item => item.id === tool.planId) || catalog.plans[0];
+  }
+
+  function estimatePlanCost(tool) {
+    const plan = getPlan(tool);
+    if (plan.custom) return Number(tool.monthlySpend || 0);
+    return plan.perUser ? plan.cost * Number(tool.seats || 1) : plan.cost;
+  }
+
+  function calculateCost(tool) {
+    return Number(tool.monthlySpend || estimatePlanCost(tool) || 0);
+  }
+
+  function loadState() {
+    try {
+      const saved = localStorage.getItem("ai_cost_optimizer");
+      if (!saved) return;
+
+      const data = JSON.parse(saved);
+      state.tools = data.tools || [];
+      state.teamSize = data.teamSize || 3;
+      state.useCase = USE_CASES.includes(data.useCase) ? data.useCase : "coding";
+    } catch (error) {
+      console.warn("Could not load saved state", error);
+    }
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem("ai_cost_optimizer", JSON.stringify({
+        tools: state.tools,
+        teamSize: state.teamSize,
+        useCase: state.useCase
+      }));
+    } catch (error) {
+      console.warn("Could not save state", error);
+    }
+  }
+
+  function syncFormInputs() {
+    const teamSizeInput = document.getElementById("teamSize");
+    const useCaseInput = document.getElementById("useCase");
+
+    if (teamSizeInput) state.teamSize = parseInt(teamSizeInput.value, 10) || 1;
+    if (useCaseInput) state.useCase = useCaseInput.value;
+
+    document.querySelectorAll("[data-row]").forEach(input => {
+      const rowIndex = Number(input.dataset.row);
+      const field = input.dataset.field;
+
+      if (!state.tools[rowIndex]) return;
+
+      state.tools[rowIndex][field] =
+        field === "planId" ? input.value : Number(input.value) || 0;
+    });
+
+    saveState();
+  }
+
+  async function saveLeadToSupabase(lead) {
+    const { error } = await supabaseClient.from("leads").insert([lead]);
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return false;
+    }
+
+    return true;
+  }
+
+  function getShareUrl() {
+    return `${window.location.origin}/?report=${state.shareId}`;
+  }
+
+  function buildReportPayload() {
+    return {
+      tools: state.tools,
+      teamSize: state.teamSize,
+      useCase: state.useCase,
+      audit: state.audit,
+      aiSummary: state.aiSummary,
+      shareId: state.shareId
+    };
+  }
+
+  async function saveReportToSupabase() {
+    if (!state.shareId) state.shareId = uid();
+
+    const { error } = await supabaseClient.from("reports").upsert({
       share_id: state.shareId,
       report_data: buildReportPayload()
     });
 
-  if (error) {
-    console.error("Report save error:", error);
-    return false;
-  }
-
-  return true;
-}
-
-async function loadSharedReport() {
-  const params = new URLSearchParams(window.location.search);
-  const reportId = params.get("report");
-
-  if (!reportId) return false;
-
-  const { data, error } = await supabaseClient
-    .from("reports")
-    .select("report_data")
-    .eq("share_id", reportId)
-    .single();
-
-  if (error || !data?.report_data) {
-    console.error("Report load error:", error);
-    return false;
-  }
-
-  const report = data.report_data;
-
-  state.tools = report.tools || [];
-  state.teamSize = report.teamSize || 1;
-  state.useCase = report.useCase || "Software development";
-  state.audit = report.audit || null;
-  state.aiSummary = report.aiSummary || "";
-  state.shareId = report.shareId || reportId;
-  state.page = "results";
-
-  return true;
-}
-function buildToolsSummary() {
-  return state.tools.map(tool => {
-    const catalog = TOOLS_CATALOG[tool.toolId];
-    const plan = catalog?.plans.find(item => item.id === tool.planId);
-
-    return `${catalog?.name || tool.toolId} - ${plan?.label || tool.planId}`;
-  }).join(", ");
-}
-    const state = {
-      page: 'form',
-      tools: [],
-      teamSize: 3,
-      useCase: 'Software development',
-      audit: null,
-      aiSummary: '',
-      email: '',
-      emailName: '',
-      emailCompany: '',
-      copied: false,
-      shareId: null,
-      emailSubmitLoading: false,
-      emailSuccess: false
-    };
-
-    function loadState() {
-      try {
-        const saved = localStorage.getItem('ai_cost_optimizer');
-        if (!saved) return;
-        const data = JSON.parse(saved);
-        state.tools = data.tools || state.tools;
-        state.teamSize = data.teamSize || state.teamSize;
-        state.useCase = data.useCase || state.useCase;
-      } catch (error) {
-        console.warn('Could not load saved state', error);
-      }
+    if (error) {
+      console.error("Report save error:", error);
+      return false;
     }
 
-    function saveState() {
-      try {
-        localStorage.setItem('ai_cost_optimizer', JSON.stringify({
-          tools: state.tools,
-          teamSize: state.teamSize,
-          useCase: state.useCase
-        }));
-      } catch (error) {
-        console.warn('Could not save state', error);
-      }
-    }
-
-    function uid() {
-  if (window.crypto && crypto.getRandomValues) {
-    const bytes = new Uint8Array(12);
-    crypto.getRandomValues(bytes);
-    return Array.from(bytes, byte => byte.toString(36).padStart(2, "0")).join("").slice(0, 20);
+    return true;
   }
 
-  return Math.random().toString(36).slice(2, 14) + Date.now().toString(36);
-}
+  async function loadSharedReport() {
+    const reportId = new URLSearchParams(window.location.search).get("report");
+    if (!reportId) return false;
 
-    function calculateCost(tool) {
+    const { data, error } = await supabaseClient
+      .from("reports")
+      .select("report_data")
+      .eq("share_id", reportId)
+      .single();
+
+    if (error || !data?.report_data) {
+      console.error("Report load error:", error);
+      return false;
+    }
+
+    const report = data.report_data;
+    state.tools = report.tools || [];
+    state.teamSize = report.teamSize || 1;
+    state.useCase = USE_CASES.includes(report.useCase) ? report.useCase : "coding";
+    state.audit = report.audit || null;
+    state.aiSummary = report.aiSummary || "";
+    state.shareId = report.shareId || reportId;
+    state.page = "results";
+
+    return true;
+  }
+
+  function buildToolsSummary() {
+    return state.tools.map(tool => {
       const catalog = TOOLS_CATALOG[tool.toolId];
-      const plan = catalog.plans.find(item => item.id === tool.planId) || catalog.plans[0];
-      if (plan.custom) return tool.customCost || 0;
-      return plan.perUser ? plan.cost * (tool.seats || 1) : plan.cost;
+      const plan = catalog?.plans.find(item => item.id === tool.planId);
+      return `${catalog?.name || tool.toolId} - ${plan?.label || tool.planId} - $${calculateCost(tool)}/mo - ${tool.seats || 1} seats`;
+    }).join(", ");
+  }
+
+  function getRecommendation(tool) {
+    const catalog = TOOLS_CATALOG[tool.toolId];
+    const plan = getPlan(tool);
+    const seats = Number(tool.seats || 1);
+    const currentSpend = calculateCost(tool);
+
+    let recommendedPlan = plan;
+    let recommendedSpend = currentSpend;
+    let action = "Keep current plan";
+    let reason = "Current plan looks reasonable for the selected team size and use case.";
+
+    if (tool.toolId === "chatgpt" && plan.id === "team" && seats <= 2) {
+      recommendedPlan = catalog.plans.find(item => item.id === "plus");
+      recommendedSpend = recommendedPlan.cost * seats;
+
+      if (recommendedSpend < currentSpend) {
+        action = "Downgrade to ChatGPT Plus";
+        reason = "For 1-2 users, ChatGPT Plus usually covers individual usage at $20/user/month, while Team costs $30/user/month.";
+      } else {
+        recommendedSpend = currentSpend;
+        action = "Review ChatGPT Team fit";
+        reason = "ChatGPT Team may be unnecessary for a very small team, but switching plans does not show direct savings based on the spend entered.";
+      }
     }
 
-    function runAudit() {
-      const results = [];
-      let totalCurrent = 0;
-      let totalRecommended = 0;
+    if (tool.toolId === "claude" && plan.id === "team" && seats === 1) {
+      recommendedPlan = catalog.plans.find(item => item.id === "pro");
+      recommendedSpend = recommendedPlan.cost;
 
-      state.tools.forEach(tool => {
-        const catalog = TOOLS_CATALOG[tool.toolId];
-        if (!catalog) return;
+      if (recommendedSpend < currentSpend) {
+        action = "Downgrade to Claude Pro";
+        reason = "Claude Team is hard to justify for one user because Claude Pro provides individual access at a lower monthly cost.";
+      } else {
+        recommendedSpend = currentSpend;
+        action = "Review Claude Team fit";
+        reason = "Claude Team may be unnecessary for one user, but Claude Pro does not create direct savings based on the spend entered.";
+      }
+    }
 
-        const plan = catalog.plans.find(item => item.id === tool.planId) || catalog.plans[0];
-        const currentCost = calculateCost(tool);
-        let recommendedPlan = plan;
-        let note = 'Current plan looks okay.';
-        let savings = 0;
+    if (tool.toolId === "cursor" && ["business", "enterprise"].includes(plan.id) && seats <= 3) {
+      recommendedPlan = catalog.plans.find(item => item.id === "pro");
+      recommendedSpend = recommendedPlan.cost * seats;
 
-        if (tool.toolId === 'chatgpt' && plan.id === 'team' && tool.seats <= 2) {
-          recommendedPlan = catalog.plans.find(item => item.id === 'plus');
-          savings = currentCost - (recommendedPlan.cost * tool.seats);
-          note = 'Use ChatGPT Plus for small teams.';
-        }
+      if (recommendedSpend < currentSpend) {
+        action = "Downgrade to Cursor Pro";
+        reason = "Small teams usually do not need Business or Enterprise controls unless centralized admin, security, or procurement features are required.";
+      } else {
+        recommendedSpend = currentSpend;
+        action = "Review Cursor advanced plan fit";
+        reason = "Cursor Business or Enterprise may be unnecessary for a small team, but Pro does not create direct savings based on the spend entered.";
+      }
+    }
 
-        if (tool.toolId === 'claude' && plan.id === 'team' && tool.seats === 1) {
-          recommendedPlan = catalog.plans.find(item => item.id === 'pro');
-          savings = currentCost - recommendedPlan.cost;
-          note = 'Claude Team is too expensive for 1 user.';
-        }
+    if (tool.toolId === "copilot" && plan.id === "enterprise" && seats < 10) {
+      recommendedPlan = catalog.plans.find(item => item.id === "business");
+      recommendedSpend = recommendedPlan.cost * seats;
 
-        const recommendedCost = recommendedPlan.custom ? tool.customCost || 0 : (recommendedPlan.perUser ? recommendedPlan.cost * (tool.seats || 1) : recommendedPlan.cost);
+      if (recommendedSpend < currentSpend) {
+        action = "Downgrade to Copilot Business";
+        reason = "For teams under 10 seats, Copilot Business is often enough unless enterprise policy controls are mandatory.";
+      } else {
+        recommendedSpend = currentSpend;
+        action = "Review Copilot Enterprise fit";
+        reason = "Copilot Enterprise may be unnecessary for a small team, but Business does not create direct savings based on the spend entered.";
+      }
+    }
 
-        results.push({
-          toolName: catalog.name,
-          icon: catalog.icon,
-          color: catalog.color,
-          currentPlan: plan.label,
-          currentCost,
-          recommendedPlan: recommendedPlan.label,
-          recommendedCost,
-          savings: Math.max(0, savings),
-          note
-        });
+    if (tool.toolId === "copilot" && plan.id === "individual" && seats >= 5) {
+      recommendedPlan = catalog.plans.find(item => item.id === "business");
+      recommendedSpend = recommendedPlan.cost * seats;
 
-        totalCurrent += currentCost;
-        totalRecommended += recommendedCost;
+      if (recommendedSpend < currentSpend) {
+        action = "Move to Copilot Business";
+        reason = "For 5+ team seats, Copilot Business can add organization management while reducing the spend entered.";
+      } else {
+        recommendedSpend = currentSpend;
+        action = "Review Copilot Individual governance";
+        reason = "For 5+ team seats, review whether Individual accounts create governance or billing risk. Copilot Business adds organization management, but it is not counted as savings here.";
+      }
+    }
+
+    if (tool.toolId === "gemini" && plan.id === "ultra" && state.useCase !== "research") {
+      recommendedPlan = catalog.plans.find(item => item.id === "pro");
+      recommendedSpend = recommendedPlan.cost * seats;
+
+      if (recommendedSpend < currentSpend) {
+        action = "Downgrade to Gemini Pro";
+        reason = "Gemini Ultra is expensive and is easiest to justify for heavy research workflows; lighter usage can often start with Pro.";
+      } else {
+        recommendedSpend = currentSpend;
+        action = "Review Gemini Ultra fit";
+        reason = "Gemini Ultra may be unnecessary outside heavy research workflows, but switching to Pro does not create direct savings based on the spend entered.";
+      }
+    }
+
+    if (["openai_api", "anthropic_api"].includes(tool.toolId) && currentSpend >= 300 && state.teamSize <= 10) {
+      recommendedSpend = Math.round(currentSpend * 0.75);
+      action = "Review API usage and credits";
+      reason = "API spend above $300/month should be reviewed for unused traffic, caching opportunities, model routing, or committed-use credits.";
+    }
+
+    const recommendedCost = Math.min(currentSpend, Math.max(0, recommendedSpend));
+    const monthlySavings = Math.max(0, currentSpend - recommendedCost);
+
+    return {
+      toolName: catalog.name,
+      icon: catalog.icon,
+      color: catalog.color,
+      currentPlan: plan.label,
+      currentCost: currentSpend,
+      recommendedPlan: recommendedPlan.label,
+      recommendedCost,
+      recommendedAction: action,
+      savings: monthlySavings,
+      note: reason
+    };
+  }
+
+  function runAudit() {
+    const results = state.tools.map(getRecommendation);
+
+    const hasChatGPT = state.tools.some(tool => tool.toolId === "chatgpt");
+    const hasClaude = state.tools.some(tool => tool.toolId === "claude");
+
+    if (hasChatGPT && hasClaude && ["writing", "research", "mixed"].includes(state.useCase)) {
+      const overlapTool = results
+        .filter(row => ["ChatGPT", "Claude"].includes(row.toolName))
+        .sort((a, b) => b.currentCost - a.currentCost)[0];
+
+      if (overlapTool && overlapTool.currentCost > 0) {
+        const consolidationSavings = Math.round(overlapTool.currentCost * 0.5);
+        overlapTool.savings += consolidationSavings;
+        overlapTool.recommendedCost = Math.max(0, overlapTool.currentCost - consolidationSavings);
+        overlapTool.recommendedAction = "Consolidate overlapping AI chat tools";
+        overlapTool.note = "The stack includes both ChatGPT and Claude for a similar use case. Keeping both may be valid, but finance should review overlap before paying full retail for both.";
+      }
+    }
+
+    const totalCurrent = results.reduce((sum, row) => sum + row.currentCost, 0);
+    const totalRecommended = results.reduce((sum, row) => sum + row.recommendedCost, 0);
+    const totalSavings = Math.max(0, totalCurrent - totalRecommended);
+
+    state.audit = {
+      results,
+      totalCurrent,
+      totalRecommended,
+      totalSavings,
+      annualSavings: totalSavings * 12,
+      status: totalSavings > 500 ? "high_savings" : totalSavings === 0 ? "efficient" : "optimization_found"
+    };
+  }
+
+  function createSummary() {
+    if (!state.audit) return "No summary available yet.";
+
+    const savings = state.audit.totalSavings;
+    const annualSavings = state.audit.annualSavings;
+    const current = state.audit.totalCurrent;
+    const toolCount = state.audit.results.length;
+    const importantTools = state.audit.results
+      .filter(row => row.savings > 0)
+      .map(row => row.toolName)
+      .slice(0, 3)
+      .join(", ");
+
+    if (savings === 0) {
+      return `Your ${toolCount}-tool stack is currently $${current}/month. The audit did not find direct monthly savings from plan changes based on the spend entered. Some tools may still deserve a fit review, especially if they are on high-governance or premium plans. We would monitor pricing changes and new credits because AI tool pricing moves quickly.`;
+    }
+
+    return `Your ${toolCount}-tool stack is currently $${current}/month. We found $${savings}/month, or $${annualSavings}/year, in potential savings. Start with ${importantTools || "the highest-spend tools"} and review the plan recommendations before renewing or expanding seats.`;
+  }
+
+  function render() {
+    const app = document.getElementById("app");
+    app.innerHTML = state.page === "form" ? renderForm() : renderResults();
+    bindEvents();
+  }
+
+  function renderForm() {
+    const toolIds = Object.keys(TOOLS_CATALOG);
+    const selectedIds = state.tools.map(tool => tool.toolId);
+
+    return `
+      <div class="card">
+        <div class="section-title">Team info</div>
+        <div class="grid grid-2">
+          <div class="field-group">
+            <label>Team size</label>
+            <input id="teamSize" type="number" min="1" max="500" value="${state.teamSize}">
+          </div>
+          <div class="field-group">
+            <label>Primary use case</label>
+            <select id="useCase">
+              ${USE_CASES.map(value => `<option value="${value}"${value === state.useCase ? " selected" : ""}>${value}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Your tools</div>
+        <div id="toolRows">
+          ${state.tools.length === 0 ? '<p class="small-text">Add the AI tools your team uses below.</p>' : ""}
+          ${state.tools.map((tool, index) => renderToolRow(tool, index)).join("")}
+        </div>
+
+        <div class="section-title" style="margin-top: 20px;">Add more tools</div>
+        <div class="add-tool-grid">
+          ${toolIds.map(id => {
+            const item = TOOLS_CATALOG[id];
+            const active = selectedIds.includes(id) ? " active" : "";
+            return `<button type="button" class="add-tool-btn${active}" data-add="${id}">${item.name}</button>`;
+          }).join("")}
+        </div>
+      </div>
+
+      <button type="button" class="button-primary" id="runAudit" ${state.tools.length === 0 ? "disabled" : ""}>Run free audit</button>
+    `;
+  }
+
+  function renderToolRow(tool, index) {
+    const catalog = TOOLS_CATALOG[tool.toolId];
+
+    return `
+      <div class="tool-row">
+        <div class="tool-name">
+          <div class="tool-icon" style="background:${catalog.color}22;color:${catalog.color};">${catalog.icon}</div>
+          ${catalog.name}
+        </div>
+
+        <select data-row="${index}" data-field="planId">
+          ${catalog.plans.map(option => `<option value="${option.id}"${option.id === tool.planId ? " selected" : ""}>${option.label}</option>`).join("")}
+        </select>
+
+        <input type="number" data-row="${index}" data-field="monthlySpend" min="0" placeholder="$ / mo" value="${tool.monthlySpend || 0}">
+        <input type="number" data-row="${index}" data-field="seats" min="1" placeholder="Seats" value="${tool.seats || 1}">
+
+        <div class="tool-cost">$${calculateCost(tool)}/mo</div>
+        <button type="button" class="remove-button" data-remove="${index}">×</button>
+      </div>
+    `;
+  }
+
+  function renderResults() {
+    const audit = state.audit;
+    const totalSavings = audit.totalSavings;
+    const annualSavings = audit.annualSavings;
+
+    if (!state.shareId) state.shareId = uid();
+
+    const shareUrl = getShareUrl();
+
+    return `
+      <div class="card">
+        <div class="section-title">Audit result</div>
+
+        <div class="savings-card">
+          <div class="savings-label">Estimated monthly savings</div>
+          <div class="savings-value">$${totalSavings.toFixed(0)} / mo</div>
+          <p class="summary-text">Estimated annual savings: <strong>$${annualSavings.toFixed(0)} / year</strong></p>
+          <p class="summary-text">Current spend: $${audit.totalCurrent}/mo → Recommended spend: $${audit.totalRecommended}/mo</p>
+        </div>
+
+        ${audit.status === "high_savings" ? `
+          <div class="summary-card">
+            <div class="section-title">Credex opportunity</div>
+            <p class="summary-text">This audit found more than $500/month in potential savings. A Credex consultation may help capture more savings through credits, vendor negotiation, and usage optimization.</p>
+            <button type="button" class="button-primary">Book a Credex consultation</button>
+          </div>
+        ` : ""}
+
+        ${audit.status === "efficient" ? `
+          <div class="summary-card">
+            <div class="section-title">Spending health</div>
+            <p class="summary-text">No direct savings found. Some tools may still need a fit review, but the entered spend does not show clear monthly savings. Leave your email to get notified when new optimizations apply to your stack.</p>
+          </div>
+        ` : ""}
+
+        <div class="summary-card">
+          <div class="section-title">Quick summary</div>
+          <p class="summary-text">${state.aiSummary}</p>
+        </div>
+
+        <div class="section-title">Plan recommendations</div>
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Current</th>
+              <th>Recommended</th>
+              <th>Savings</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${audit.results.map(row => `
+              <tr>
+                <td style="min-width: 160px;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="tool-icon" style="background:${row.color}22;color:${row.color}; width:30px; height:30px;">${row.icon}</div>
+                    <div>${row.toolName}</div>
+                  </div>
+                </td>
+                <td>${row.currentPlan}<br><span class="small-text">$${row.currentCost}/mo</span></td>
+                <td>${row.recommendedAction}<br><span class="small-text">$${row.recommendedCost}/mo</span><br><span class="small-text">${row.note}</span></td>
+                <td>${row.savings > 0 ? `<span class="badge-pill badge-green">$${row.savings}</span>` : "—"}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Email report</div>
+        ${state.emailSuccess ? '<div class="small-text" style="color: var(--green);">Report saved. Check your inbox if email sending is configured.</div>' : ""}
+
+        <div class="grid grid-2">
+          <div class="field-group">
+            <label>Name</label>
+            <input id="emailName" type="text" value="${state.emailName}" placeholder="Alex">
+          </div>
+          <div class="field-group">
+            <label>Company</label>
+            <input id="emailCompany" type="text" value="${state.emailCompany}" placeholder="Acme">
+          </div>
+        </div>
+
+        <div class="field-group" style="margin-top: 16px;">
+          <label>Role</label>
+          <input id="emailRole" type="text" value="${state.emailRole}" placeholder="Founder, CFO, Engineering Lead">
+        </div>
+
+        <div class="field-group" style="margin-top: 16px;">
+          <label>Email address</label>
+          <input id="emailInput" type="email" value="${state.email}" placeholder="you@example.com">
+        </div>
+
+        <input id="website" type="text" autocomplete="off" tabindex="-1" style="display:none">
+
+        <button type="button" class="button-primary" id="emailSubmit" style="margin-top: 18px;">${state.emailSubmitLoading ? "Sending..." : "Send report"}</button>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Share link</div>
+        <div class="share-box">
+          <a class="share-link" href="${shareUrl}" target="_blank">${shareUrl}</a>
+          <button type="button" class="button-secondary" id="copyBtn">${state.copied ? "Copied" : "Copy"}</button>
+        </div>
+        <p class="small-text">This public link strips personal email data and only shows the audit result.</p>
+      </div>
+
+      <button type="button" class="button-secondary" id="backBtn">← Back to edit</button>
+    `;
+  }
+
+  function bindEvents() {
+    if (state.page === "form") {
+      document.getElementById("teamSize")?.addEventListener("input", event => {
+        state.teamSize = parseInt(event.target.value, 10) || 1;
+        saveState();
       });
 
-      state.audit = {
-        results,
-        totalCurrent,
-        totalRecommended,
-        totalSavings: Math.max(0, totalCurrent - totalRecommended)
-      };
-    }
+      document.getElementById("useCase")?.addEventListener("change", event => {
+        state.useCase = event.target.value;
+        saveState();
+      });
 
-    function createSummary() {
-      if (!state.audit) return 'No summary available yet.';
-      const savings = state.audit.totalSavings;
-      const current = state.audit.totalCurrent;
-      const toolCount = state.audit.results.length;
-      const importantTools = state.audit.results.filter(r => r.savings > 0).map(r => r.toolName).slice(0, 3).join(', ');
+      document.querySelectorAll("[data-add]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          syncFormInputs();
 
-      return `Your ${toolCount}-tool stack is currently $${current}/month. We found $${savings}/month in possible savings by changing some plans. Start with ${importantTools || 'keeping your current tools'} and check the recommendations.`;
-    }
+          const id = button.dataset.add;
+          const exists = state.tools.some(tool => tool.toolId === id);
 
-    function render() {
-      const app = document.getElementById('app');
-      app.innerHTML = state.page === 'form' ? renderForm() : renderResults();
-      bindEvents();
-    }
+          if (exists) {
+            state.tools = state.tools.filter(tool => tool.toolId !== id);
+          } else {
+            const newTool = {
+              toolId: id,
+              planId: TOOLS_CATALOG[id].plans[0].id,
+              seats: state.teamSize,
+              monthlySpend: 0
+            };
 
-    function renderForm() {
-      const toolIds = Object.keys(TOOLS_CATALOG);
-      const selectedIds = state.tools.map(tool => tool.toolId);
+            newTool.monthlySpend = estimatePlanCost(newTool);
+            state.tools.push(newTool);
+          }
 
-      return `
-        <div class="card">
-          <div class="section-title">Team info</div>
-          <div class="grid grid-2">
-            <div class="field-group">
-              <label>Team size</label>
-              <input id="teamSize" type="number" min="1" max="500" value="${state.teamSize}">
-            </div>
-            <div class="field-group">
-              <label>Primary use case</label>
-              <select id="useCase">
-                ${USE_CASES.map(value => `<option${value === state.useCase ? ' selected' : ''}>${value}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-        </div>
+          saveState();
+          render();
+        });
+      });
 
-        <div class="card">
-          <div class="section-title">Your tools</div>
-          <div id="toolRows">
-            ${state.tools.length === 0 ? '<p class="small-text">Add the AI tools your team uses below.</p>' : ''}
-            ${state.tools.map((tool, index) => renderToolRow(tool, index)).join('')}
-          </div>
-          <div class="section-title" style="margin-top: 20px;">Add more tools</div>
-          <div class="add-tool-grid">
-            ${toolIds.map(id => {
-              const item = TOOLS_CATALOG[id];
-              const active = selectedIds.includes(id) ? ' active' : '';
-              return `<button class="add-tool-btn${active}" data-add="${id}">${item.name}</button>`;
-            }).join('')}
-          </div>
-        </div>
+      document.querySelectorAll("[data-row]").forEach(input => {
+        input.addEventListener("input", event => {
+          const rowIndex = Number(event.target.dataset.row);
+          const field = event.target.dataset.field;
 
-        <button class="button-primary" id="runAudit" ${state.tools.length === 0 ? 'disabled' : ''}>Run free audit</button>
-      `;
-    }
+          if (!state.tools[rowIndex]) return;
 
-    function renderToolRow(tool, index) {
-      const catalog = TOOLS_CATALOG[tool.toolId];
-      const plan = catalog.plans.find(item => item.id === tool.planId) || catalog.plans[0];
-      const isCustom = plan.custom;
+          state.tools[rowIndex][field] =
+            field === "planId" ? event.target.value : Number(event.target.value) || 0;
 
-      return `
-        <div class="tool-row">
-          <div class="tool-name">
-            <div class="tool-icon" style="background:${catalog.color}22;color:${catalog.color};">${catalog.icon}</div>
-            ${catalog.name}
-          </div>
-          <select data-row="${index}" data-field="planId">
-            ${catalog.plans.map(option => `<option value="${option.id}"${option.id === tool.planId ? ' selected' : ''}>${option.label}</option>`).join('')}
-          </select>
-          <input type="number" data-row="${index}" data-field="${isCustom ? 'customCost' : 'seats'}" min="0" placeholder="${isCustom ? '$ / mo' : 'Seats'}" value="${isCustom ? tool.customCost : tool.seats}">
-          <div class="tool-cost">$${calculateCost(tool)}/mo</div>
-          <button class="remove-button" data-remove="${index}">×</button>
-        </div>
-      `;
-    }
-
-    function renderResults() {
-      const audit = state.audit;
-      const totalSavings = audit.totalSavings;
-      const shareId = state.shareId || uid();
-      if (!state.shareId) state.shareId = shareId;
-      const shareUrl = getShareUrl();
-
-      return `
-        <div class="card">
-          <div class="section-title">Audit result</div>
-          <div class="savings-card">
-            <div class="savings-label">Estimated savings</div>
-            <div class="savings-value">$${totalSavings.toFixed(0)} / mo</div>
-            <p class="summary-text">This is based on the current tool selection and plan suggestions.</p>
-          </div>
-
-          <div class="summary-card">
-            <div class="section-title">Quick summary</div>
-            <p class="summary-text">${state.aiSummary}</p>
-          </div>
-
-          <div class="section-title">Plan recommendations</div>
-          <table class="audit-table">
-            <thead>
-              <tr>
-                <th>Tool</th>
-                <th>Current</th>
-                <th>Recommended</th>
-                <th>Savings</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${audit.results.map(row => `
-                <tr>
-                  <td style="min-width: 160px;">
-                    <div style="display:flex;align-items:center;gap:10px;">
-                      <div class="tool-icon" style="background:${row.color}22;color:${row.color}; width:30px; height:30px;">${row.icon}</div>
-                      <div>${row.toolName}</div>
-                    </div>
-                  </td>
-                  <td>${row.currentPlan} <br><span class="small-text">$${row.currentCost}/mo</span></td>
-                  <td>${row.recommendedPlan} <br><span class="small-text">$${row.recommendedCost}/mo</span></td>
-                  <td>${row.savings > 0 ? `<span class="badge-pill badge-green">$${row.savings}</span>` : '—'}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-
-        <div class="card">
-          <div class="section-title">Email report</div>
-          ${state.emailSuccess ? '<div class="small-text" style="color: var(--green);">Report sent. Check your inbox.</div>' : ''}
-          <div class="grid grid-2">
-            <div class="field-group">
-              <label>Name</label>
-              <input id="emailName" type="text" value="${state.emailName}" placeholder="Alex">
-            </div>
-            <div class="field-group">
-              <label>Company</label>
-              <input id="emailCompany" type="text" value="${state.emailCompany}" placeholder="Acme">
-            </div>
-          </div>
-          <div class="field-group" style="margin-top: 16px;">
-            <label>Email address</label>
-            <input id="emailInput" type="email" value="${state.email}" placeholder="you@example.com">
-          </div>
-          <button class="button-primary" id="emailSubmit" style="margin-top: 18px;">${state.emailSubmitLoading ? 'Sending...' : 'Send report'}</button>
-        </div>
-
-        <div class="card">
-          <div class="section-title">Share link</div>
-          <div class="share-box">
-            <a class="share-link" href="${shareUrl}" target="_blank">${shareUrl}</a>
-            <button class="button-secondary" id="copyBtn">${state.copied ? 'Copied' : 'Copy'}</button>
-          </div>
-          <p class="small-text">This link is simple and shareable. No personal email data is included.</p>
-        </div>
-
-        <button class="button-secondary" id="backBtn">← Back to edit</button>
-      `;
-    }
-
-    function bindEvents() {
-      if (state.page === 'form') {
-        document.getElementById('teamSize')?.addEventListener('input', event => {
-          state.teamSize = parseInt(event.target.value, 10) || 1;
           saveState();
         });
 
-        document.getElementById('useCase')?.addEventListener('change', event => {
-          state.useCase = event.target.value;
+        input.addEventListener("change", event => {
+          const field = event.target.dataset.field;
+          if (field === "planId") render();
+        });
+      });
+
+      document.querySelectorAll("[data-remove]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          syncFormInputs();
+
+          const index = Number(button.dataset.remove);
+          state.tools.splice(index, 1);
+
           saveState();
-        });
-
-        document.querySelectorAll('[data-add]').forEach(button => {
-          button.addEventListener('click', () => {
-            const id = button.dataset.add;
-            const exists = state.tools.some(tool => tool.toolId === id);
-            if (exists) {
-              state.tools = state.tools.filter(tool => tool.toolId !== id);
-            } else {
-              state.tools.push({
-                toolId: id,
-                planId: TOOLS_CATALOG[id].plans[0].id,
-                seats: state.teamSize,
-                customCost: 0
-              });
-            }
-            saveState();
-            render();
-          });
-        });
-
-        document.querySelectorAll('[data-row]').forEach(input => {
-          input.addEventListener('change', event => {
-            const rowIndex = Number(event.target.dataset.row);
-            const field = event.target.dataset.field;
-            state.tools[rowIndex][field] = field === 'planId' ? event.target.value : Number(event.target.value) || 0;
-            saveState();
-            render();
-          });
-        });
-
-        document.querySelectorAll('[data-remove]').forEach(button => {
-          button.addEventListener('click', () => {
-            const index = Number(button.dataset.remove);
-            state.tools.splice(index, 1);
-            saveState();
-            render();
-          });
-        });
-
-        document.getElementById('runAudit')?.addEventListener('click', async () => {
-  if (state.tools.length === 0) return;
-
-  runAudit();
-  state.aiSummary = createSummary();
-  state.shareId = uid();
-
-  await saveReportToSupabase();
-
-  state.page = 'results';
-  render();
-});
-      } else {
-        document.getElementById('backBtn')?.addEventListener('click', () => {
-          state.page = 'form';
           render();
         });
+      });
 
-        document.getElementById('copyBtn')?.addEventListener('click', () => {
-          navigator.clipboard.writeText(getShareUrl());
-          state.copied = true;
+      document.getElementById("runAudit")?.addEventListener("click", async event => {
+        event.preventDefault();
+        syncFormInputs();
+
+        if (state.tools.length === 0) return;
+
+        runAudit();
+        state.aiSummary = createSummary();
+        state.shareId = uid();
+
+        await saveReportToSupabase();
+
+        state.page = "results";
+        render();
+      });
+    } else {
+      document.getElementById("backBtn")?.addEventListener("click", event => {
+        event.preventDefault();
+        state.page = "form";
+        render();
+      });
+
+      document.getElementById("copyBtn")?.addEventListener("click", event => {
+        event.preventDefault();
+
+        navigator.clipboard.writeText(getShareUrl());
+        state.copied = true;
+        render();
+
+        setTimeout(() => {
+          state.copied = false;
           render();
-          setTimeout(() => {
-            state.copied = false;
-            render();
-          }, 1500);
-        });
+        }, 1500);
+      });
 
-document.getElementById('emailSubmit')?.addEventListener('click', async () => {
-  const email = document.getElementById('emailInput')?.value.trim();
-  const name = document.getElementById('emailName')?.value.trim();
-  const company = document.getElementById('emailCompany')?.value.trim();
+      document.getElementById("emailSubmit")?.addEventListener("click", async event => {
+        event.preventDefault();
 
-  if (!email || !email.includes('@')) {
-    alert("Please enter a valid email address.");
-    return;
-  }
+        const email = document.getElementById("emailInput")?.value.trim();
+        const name = document.getElementById("emailName")?.value.trim();
+        const company = document.getElementById("emailCompany")?.value.trim();
+        const role = document.getElementById("emailRole")?.value.trim();
+        const honeypot = document.getElementById("website")?.value.trim();
 
-  state.email = email;
-  state.emailName = name;
-  state.emailCompany = company;
-  state.emailSubmitLoading = true;
-  render();
+        if (honeypot) return;
 
-  const lead = {
-    name: name || null,
-    email,
-    company: company || null,
-    company_size: String(state.teamSize),
-    monthly_spend: state.audit?.totalCurrent || 0,
-    tools: buildToolsSummary(),
-    audit_result: state.aiSummary || createSummary()
-  };
+        if (!email || !email.includes("@")) {
+          alert("Please enter a valid email address.");
+          return;
+        }
 
-  const saved = await saveLeadToSupabase(lead);
+        state.email = email;
+        state.emailName = name;
+        state.emailCompany = company;
+        state.emailRole = role;
+        state.emailSubmitLoading = true;
+        render();
 
-  state.emailSubmitLoading = false;
-  state.emailSuccess = saved;
-  render();
+        const lead = {
+          name: name || null,
+          email,
+          company: company || null,
+          role: role || null,
+          company_size: String(state.teamSize),
+          monthly_spend: state.audit?.totalCurrent || 0,
+          monthly_savings: state.audit?.totalSavings || 0,
+          annual_savings: state.audit?.annualSavings || 0,
+          share_id: state.shareId,
+          tools: buildToolsSummary(),
+          audit_result: state.aiSummary || createSummary()
+        };
 
-  if (!saved) {
-    alert("Could not save your report. Please try again.");
-  }
-});
-      }
+        const saved = await saveLeadToSupabase(lead);
+
+        state.emailSubmitLoading = false;
+        state.emailSuccess = saved;
+        render();
+
+        if (!saved) {
+          alert("Could not save your report. Please try again.");
+        }
+      });
     }
+  }
 
-   (async function init() {
-  loadState();
-  await loadSharedReport();
-  render();
-})();
-  </script>
+  (async function init() {
+    loadState();
+    await loadSharedReport();
+    render();
+  })();
+</script>
 </body>
 </html>
