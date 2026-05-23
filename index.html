@@ -501,7 +501,8 @@
     copied: false,
     shareId: null,
     emailSubmitLoading: false,
-    emailSuccess: false
+    emailSuccess: false,
+isSharedReport: false
   };
 
   function uid() {
@@ -640,6 +641,7 @@
     state.aiSummary = report.aiSummary || "";
     state.shareId = report.shareId || reportId;
     state.page = "results";
+    state.isSharedReport = true;
 
     return true;
   }
@@ -964,34 +966,37 @@
       </div>
 
       <div class="card">
-        <div class="section-title">Email report</div>
-        ${state.emailSuccess ? '<div class="small-text" style="color: var(--green);">Report saved. Check your inbox if email sending is configured.</div>' : ""}
+              ${!state.isSharedReport ? `
+        <div class="card">
+          <div class="section-title">Email report</div>
+          ${state.emailSuccess ? '<div class="small-text" style="color: var(--green);">Report saved. Check your inbox if email sending is configured.</div>' : ""}
 
-        <div class="grid grid-2">
-          <div class="field-group">
-            <label>Name</label>
-            <input id="emailName" type="text" value="${state.emailName}" placeholder="Alex">
+          <div class="grid grid-2">
+            <div class="field-group">
+              <label>Name</label>
+              <input id="emailName" type="text" value="${state.emailName}" placeholder="Alex">
+            </div>
+            <div class="field-group">
+              <label>Company</label>
+              <input id="emailCompany" type="text" value="${state.emailCompany}" placeholder="Acme">
+            </div>
           </div>
-          <div class="field-group">
-            <label>Company</label>
-            <input id="emailCompany" type="text" value="${state.emailCompany}" placeholder="Acme">
+
+          <div class="field-group" style="margin-top: 16px;">
+            <label>Role</label>
+            <input id="emailRole" type="text" value="${state.emailRole}" placeholder="Founder, CFO, Engineering Lead">
           </div>
+
+          <div class="field-group" style="margin-top: 16px;">
+            <label>Email address</label>
+            <input id="emailInput" type="email" value="${state.email}" placeholder="you@example.com">
+          </div>
+
+          <input id="website" type="text" autocomplete="off" tabindex="-1" style="display:none">
+
+          <button type="button" class="button-primary" id="emailSubmit" style="margin-top: 18px;">${state.emailSubmitLoading ? "Sending..." : "Send report"}</button>
         </div>
-
-        <div class="field-group" style="margin-top: 16px;">
-          <label>Role</label>
-          <input id="emailRole" type="text" value="${state.emailRole}" placeholder="Founder, CFO, Engineering Lead">
-        </div>
-
-        <div class="field-group" style="margin-top: 16px;">
-          <label>Email address</label>
-          <input id="emailInput" type="email" value="${state.email}" placeholder="you@example.com">
-        </div>
-
-        <input id="website" type="text" autocomplete="off" tabindex="-1" style="display:none">
-
-        <button type="button" class="button-primary" id="emailSubmit" style="margin-top: 18px;">${state.emailSubmitLoading ? "Sending..." : "Send report"}</button>
-      </div>
+      ` : ""}
 
       <div class="card">
         <div class="section-title">Share link</div>
