@@ -24,4 +24,5 @@ StackAudit is a free AI spend audit tool for founders, engineering leads, and fi
 
 ## Screenshots
 <img width="810" height="1972" alt="127 0 0 1_5500_index%20(1) html" src="https://github.com/user-attachments/assets/fb85ca76-b88e-494a-a4a5-fd5a9e0c7aab" />
+<img width="810" height="1972" alt="127 0 0 1_5500_index%20(1) html" src="https://github.com/user-attachments/assets/58e85775-814b-4585-b982-8c21b0aeed33" />
 
